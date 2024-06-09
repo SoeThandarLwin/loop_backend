@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
+import { Post } from "./post.model";
+import { v4 as uuidv4 } from 'uuid';
 
-export function createPost(req: Request, res: Response) {
+export async function createPost(req: Request, res: Response) {
+    const post = new Post({ _id: uuidv4(), description : 'Hello' });
+    await post.save();
     res.send('create post');
 }
 
