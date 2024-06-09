@@ -68,6 +68,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 export interface IUser extends Document {
+  _id: string| Schema.Types.UUID;
   username: string;
   email: string;
   password: string;
@@ -86,6 +87,7 @@ interface UserModel extends Model<IUser, {}, IUserMethods> {
 }
 
 const userSchema = new Schema<IUser, UserModel, IUserMethods>({
+  _id: {type: Schema.Types.UUID, required: true},
   username: { type: String, required: true },
   email: { type: String, required: true },
   password: { type: String, required: true },
@@ -112,6 +114,7 @@ userSchema.methods.generateAuthToken = async function () {
 userSchema.methods.toJSON = function () {
   const user = this as IUser;
   const userObject = user.toObject();
+  userObject._id = this._id.toString();
   delete userObject.password;
   delete userObject.tokens;
   return userObject;

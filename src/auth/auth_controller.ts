@@ -1,5 +1,6 @@
 import User from './auth_model';
 import { IUser } from './auth_model';
+import { v4 as uuidv4 } from "uuid";
 
 export const registerUser = async (user: Partial<IUser>) => {
   const { username, email, password } = user;
@@ -14,7 +15,7 @@ export const registerUser = async (user: Partial<IUser>) => {
       error: 'User with that email already exists.',
     };
   }
-  const newUser = new User({ username, email, password, followers: [], following: [] });
+  const newUser = new User({ _id: uuidv4(), username, email, password, followers: [], following: [] });
   await newUser.save();
   const token = await newUser.generateAuthToken();
   return {
