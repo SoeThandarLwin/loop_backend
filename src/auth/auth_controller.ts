@@ -1,5 +1,11 @@
 import User from './auth_model';
 import { IUser } from './auth_model';
+import { v4 as uuidv4 } from "uuid";
+
+export const checkEmail = async (email: string) => {
+  const existingUser = await User.findOne({ email });
+  return !!existingUser;
+}
 
 export const registerUser = async (user: Partial<IUser>) => {
   const { username, email, password } = user;
@@ -14,7 +20,7 @@ export const registerUser = async (user: Partial<IUser>) => {
       error: 'User with that email already exists.',
     };
   }
-  const newUser = new User({ username, email, password, followers: [], following: [] });
+  const newUser = new User({ _id: uuidv4(), username, email, password, followers: [], following: [] });
   await newUser.save();
   const token = await newUser.generateAuthToken();
   return {
@@ -43,45 +49,15 @@ export const loginUser = async (user: Partial<IUser>) => {
   };
 };
 
-export const followUser = async (followerId: string, followeeId: string) => {
-  const follower = await User.findById(followerId);
-  const followee = await User.findById(followeeId);
-
-  if (!follower || !followee) {
-    return { error: 'User not found' };
+export async function updatePassword(email: string, password: string){
+  const user = await User.findOne({ email });
+  if (!user) {
+    return null;
   }
+  user.password = password;
+  await user.save();
+  return user;
+}
 
-  if (follower.following.includes(followeeId)) {
-    return { error: 'Already following this user' };
-  }
 
-  follower.following.push(followeeId);
-  followee.followers.push(followerId);
-
-  await follower.save();
-  await followee.save();
-
-  // Add notification logic here (if needed)
-
-  return { message: 'Followed successfully' };
-};
-
-export const unfollowUser = async (followerId: string, followeeId: string) => {
-  const follower = await User.findById(followerId);
-  const followee = await User.findById(followeeId);
-
-  if (!follower || !followee) {
-    return { error: 'User not found' };
-  }
-
-  follower.following = follower.following.filter(id => id !== followeeId);
-  followee.followers = followee.followers.filter(id => id !== followerId);
-
-  await follower.save();
-  await followee.save();
-
-  // Add notification logic here (if needed)
-
-  return { message: 'Unfollowed successfully' };
-};
 
