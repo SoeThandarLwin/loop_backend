@@ -4,6 +4,7 @@ import { postRouter } from './post/post.router';
 import cors from "cors";
 import "./auth/connection";
 import authRoutes from "./auth/auth_routes";
+import { mediaRouter } from "./media/media.router";
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.CONNECTION_URL}/Loop?retryWrites=true&w=majority&appName=Cluster0`;
 
@@ -20,6 +21,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/post', postRouter);
+app.use('/media', mediaRouter)
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
