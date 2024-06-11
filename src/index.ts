@@ -4,6 +4,7 @@ import { postRouter } from './post/post.router';
 import cors from "cors";
 import "./auth/connection";
 import authRoutes from "./auth/auth_routes";
+import showAllPost from "./showAllPost/showAll_router";
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.CONNECTION_URL}/Loop?retryWrites=true&w=majority&appName=Cluster0`;
 
@@ -19,6 +20,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use(cors());
 app.use(express.json());
 app.use('/api/auth', authRoutes);
+app.use('/show', showAllPost );
 app.use('/post', postRouter);
 
 app.listen(port, () => {
