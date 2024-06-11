@@ -11,9 +11,27 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const fss = fs.promises;
+const regexPrice = new RegExp('[0-9]+\-[0-9]+');
 
 export async function createPost(req: Request, res: Response) {
-  const { description } = req.body;
+  const { artist_post, name, price, description } = req.body;
+  var artistPost;
+
+  if( artist_post == undefined || artist_post == null){
+    return res.status(400).send({ message: 'Post status cannot be empty'});
+  }
+
+  switch (artist_post) {
+    case 'true': artistPost = true; break;
+    case 'false': artistPost = false; break;
+    default: return res.status(400).send({ message: 'Invalid post status value'});
+  }
+
+  if (!name)
+    return res.status(400).send({ message: 'Name cannot be empty.' });
+
+  if (!price || !regexPrice.test(price))
+    return res.status(400).send({ message: 'Price cannot be empty.' });
 
   if (!description)
     return res.status(400).send({ message: 'Description cannot be empty.' });
@@ -23,8 +41,9 @@ export async function createPost(req: Request, res: Response) {
       .status(400)
       .send({ message: 'Before photo and reference photo must be included.' });
 
-  const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+  console.log(req.files);
 
+  const files = req.files as { [fieldname: string]: Express.Multer.File[] };
   const before = files['before'][0];
   const reference = files['reference'][0];
 
@@ -55,6 +74,9 @@ export async function createPost(req: Request, res: Response) {
   const post = new Post({
     _id: uuidv4(),
     user: user.id,
+    artist_post: artistPost,
+    name,
+    price,
     description,
     original_photo: beforeMedia._id,
     reference_photo: referenceMedia._id,
