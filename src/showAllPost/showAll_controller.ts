@@ -31,9 +31,9 @@ const mediaMap = media.reduce((map, item) => {
   const combinedPosts = artistPosts.map(post => ({
     ...post.toJSON(),
     original_photo: mediaMap[post.original_photo.toString()]?.path,
-    orginal_photoType : mediaMap[post.original_photo.toString()]?.mimetype.split('/')[1],
+    orginal_photoFileName : mediaMap[post.original_photo.toString()]?.filename,
     reference_photo: mediaMap[post.reference_photo.toString()]?.path,
-    reference_photoType : mediaMap[post.reference_photo.toString()]?.mimetype.split('/')[1],
+    reference_photoFileName : mediaMap[post.reference_photo.toString()]?.filename,
     user_name: userMap[post.user!.toString()].username
   }));
 console.log(combinedPosts);
