@@ -8,15 +8,6 @@ export async function getAllPost() {
   const posts = await Post.find();
   //filter only artist post
   const artistPosts = posts.filter(post => post.artist_post);
-  //get photo ids from artist post
-  const photoIds = artistPosts.flatMap(post => [post.original_photo, post.reference_photo]);
-// Fetch corresponding media details
-  const media = await Media.find({ _id: { $in: photoIds } });
-// Create a map for quick lookup
-const mediaMap = media.reduce((map, item) => {
-    map[item._id.toString()] = item;
-    return map;
-  }, {} as { [key: string] : any });
   // Extract user UUIDs from artist posts
   const userIds = artistPosts.map(post => post.user);
   // Fetch corresponding user details
@@ -30,14 +21,9 @@ const mediaMap = media.reduce((map, item) => {
   // Combine post data with media and user data, but only include filenames and username
   const combinedPosts = artistPosts.map(post => ({
     ...post.toJSON(),
-    original_photo: mediaMap[post.original_photo.toString()]?.path,
-    orginal_photoFileName : mediaMap[post.original_photo.toString()]?.filename,
-    reference_photo: mediaMap[post.reference_photo.toString()]?.path,
-    reference_photoFileName : mediaMap[post.reference_photo.toString()]?.filename,
     user_name: userMap[post.user!.toString()].username
-  }));
-console.log(combinedPosts);
-return combinedPosts;
+  }));  
+  return combinedPosts;
 
 }
 
