@@ -60,6 +60,12 @@ export async function updatePassword(email: string, password: string){
 }
 
 
+//fetch user data by id
+export async function getUserById(userId: string) {
+  const user = await User.findOne({ _id: userId });
+  return user;
+}
+
 
 
 

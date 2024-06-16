@@ -1,6 +1,6 @@
 import express from 'express';
 import { IUser } from './auth_model';
-import { loginUser, registerUser, checkEmail, updatePassword} from './auth_controller';
+import { loginUser, registerUser, checkEmail, updatePassword, getUserById} from './auth_controller';
 import auth, { CustomRequest } from './auth';
 
 const router = express.Router();
@@ -85,5 +85,12 @@ router.put('/updatePassword', async (req: CustomRequest, res) => {
     message: 'Password updated successfully.',
   });
 });
+
+//get user by id 
+router.get('/getUserById/:id', async (req, res) => {
+  const user = await getUserById(req.params.id);
+  return res.status(200).json(user);
+});
 export default router;
+
 
