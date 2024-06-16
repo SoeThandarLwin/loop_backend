@@ -28,7 +28,7 @@ export function sendMessage({ io, socket, user }: any) {
     const message = JSON.parse(payload);
     const validated = msgSchema.safeParse(message);
     if (validated.success) {
-      await new Message({
+        const msgResponse = await new Message({
         _id: uuidv4(),
         from: user.id,
         to: message.to,
@@ -39,6 +39,7 @@ export function sendMessage({ io, socket, user }: any) {
       socket.to(`user:${message.to}`).emit('receive:message', {
         from: user.id,
         content: message.content,
+        timestamp: msgResponse.timestamp,
       });
     }
   };
