@@ -9,6 +9,13 @@ import { createServer, IncomingMessage, ServerResponse } from "http";
 import { Server } from "socket.io";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import User from "./auth/auth_model";
+import { z } from "zod";
+import { sendMediaMessage, sendMessage } from './chat/chat.controller';
+
+const msgSchema = z.object({
+  to: z.string().uuid({message: "Must be 5 or more characters long"}),
+  content: z.string(),
+})
 
 declare global {
   namespace Express {
@@ -74,12 +81,16 @@ io.engine.use((req : IncomingMessage & {user: any, _query:{sid: any}}, res: Serv
 
 io.on("connection", async (socket) => {
   const req = socket.request as Request & { user: Express.User };
+  const user: Express.User = req.user;
 
   socket.join(`user:${req.user.id}`);
 
   socket.on("whoami", (cb) => {
     io.sockets.emit('whoami', req.user.username);
   });
+
+  socket.on('send:message', sendMessage({ io, socket, user }));
+  socket.on('send:media_message', sendMediaMessage({ io, socket, user }));
 });
 
 httpServer.listen(port, () => {
