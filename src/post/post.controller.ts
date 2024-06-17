@@ -26,7 +26,6 @@ export async function createPost(req: Request, res: Response) {
     case 'false': artistPost = false; break;
     default: return res.status(400).send({ message: 'Invalid post status value'});
   }
-
   if (!name)
     return res.status(400).send({ message: 'Name cannot be empty.' });
 

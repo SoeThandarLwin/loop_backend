@@ -1,6 +1,6 @@
 import express from 'express';
 import { IUser } from './auth_model';
-import { loginUser, registerUser, checkEmail, updatePassword, getUserById} from './auth_controller';
+import { loginUser, registerUser, checkEmail, updatePassword, editProfile, getUserById} from './auth_controller';
 import auth, { CustomRequest } from './auth';
 
 const router = express.Router();
@@ -86,11 +86,27 @@ router.put('/updatePassword', async (req: CustomRequest, res) => {
   });
 });
 
+// Edit profile
+router.put('/editProfile', async(req: CustomRequest, res) => {
+  const {firstName, lastName, username, email } = req.body;
+  const user = await editProfile(firstName, lastName, username, email);
+  if (!user) {
+    return res.status(400).json({
+      error: 'User not found.',
+    });
+  }
+  return res.status(200).json({
+    message: 'Profile updated successfully.',
+  })
+});
+
 //get user by id 
 router.get('/getUserById/:id', async (req, res) => {
   const user = await getUserById(req.params.id);
   return res.status(200).json(user);
 });
+
+
 export default router;
 
 

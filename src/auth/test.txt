@@ -1,0 +1,104 @@
+export async function changePw (password: string) {
+  const user = await User.findOne({password});
+  if (!user) {
+    return {
+      error: 'Wrong Current Password',
+    };
+  }
+  user.password = password;
+  await user.save();
+  return user;
+};
+
+/* export const changePw = async (user: Partial<IUser>) => {
+  const {password } = user;
+  if (!password) {
+    return {
+      error: 'Please provide all the required fields',
+    };
+  }
+  const existingUser = await User.findOne({password});
+  if (!existingUser) {
+    return {
+      error: 'Wrong Current Password',
+    };
+  } else if (existingUser){
+    return{
+
+    }
+  }
+  const token = await existingUser.generateAuthToken();
+  return {
+    user: existingUser,
+    token,
+  };
+}; */
+
+export async function editProfile(firstName: string, lastName: string, username: string, email: string){
+  const user = await User.findOne({ email });
+  if (!user) {
+    return null;
+  }
+  user.username = username;
+  user.firstName = firstName;
+  user.lastName = lastName;
+
+  await user.save();
+  return user;
+}
+
+
+
+
+
+
+
+
+
+
+//fetch user data by id
+export async function getUserById(userId: string) {
+  const user = await User.findOne({ _id: userId });
+  return user;
+}
+
+
+
+
+
+
+
+
+import { loginUser, registerUser, checkEmail, updatePassword, editProfile} from './auth_controller';
+
+
+// Edit profile
+router.put('/editProfile', async(req: CustomRequest, res) => {
+  const {firstName, lastName, username, email } = req.body;
+  const user = await editProfile(firstName, lastName, username, email);
+  if (!user) {
+    return res.status(400).json({
+      error: 'User not found.',
+    });
+  }
+  return res.status(200).json({
+    message: 'Profile updated successfully.',
+  })
+});
+
+
+
+
+
+
+
+
+
+
+import { loginUser, registerUser, checkEmail, updatePassword, getUserById} from './auth_controller';
+
+//get user by id 
+router.get('/getUserById/:id', async (req, res) => {
+  const user = await getUserById(req.params.id);
+  return res.status(200).json(user);
+});
