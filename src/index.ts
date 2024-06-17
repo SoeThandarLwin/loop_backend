@@ -83,6 +83,8 @@ io.on("connection", async (socket) => {
   const req = socket.request as Request & { user: Express.User };
   const user: Express.User = req.user;
 
+  console.group(`user: ${req.user.id} connected`)
+
   socket.join(`user:${req.user.id}`);
 
   socket.on("whoami", (cb) => {
