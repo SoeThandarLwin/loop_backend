@@ -1,6 +1,6 @@
 import express from 'express';
 import { IUser } from './auth_model';
-import { loginUser, registerUser, followUser, unfollowUser } from './auth_controller';
+import { loginUser, registerUser, checkEmail, updatePassword} from './auth_controller';
 import auth, { CustomRequest } from './auth';
 
 const router = express.Router();
@@ -34,6 +34,12 @@ router.post('/login', async (req, res) => {
   return res.status(200).json(loggedInUser);
 });
 
+router.post('/checkEmail', async (req, res) => {
+  const { email } = req.body;
+  const existingUser = await checkEmail(email);
+  return res.status(200).json(existingUser);
+});
+
 // Fetch logged in user
 router.get('/me', auth, async (req: CustomRequest, res) => {
   return res.status(200).json({
@@ -65,36 +71,19 @@ router.post('/logout', auth, async (req: CustomRequest, res) => {
   }
 });
 
-// Logout user from all devices
-router.post('/logoutall', auth, async (req: CustomRequest, res) => {
-  if (req.user) {
-    req.user.tokens = [];
-    await req.user.save();
+
+// Update password
+router.put('/updatePassword', async (req: CustomRequest, res) => {
+  const {email, password} = req.body;
+  const user = await updatePassword(email, password);
+  if (!user) {
+    return res.status(400).json({
+      error: 'User not found.',
+    });
   }
   return res.status(200).json({
-    message: 'User logged out from all devices successfully.',
+    message: 'Password updated successfully.',
   });
 });
-
-// Follow user
-router.post('/follow', auth, async (req: CustomRequest, res) => {
-  const { followeeId } = req.body;
-  const result = await followUser(req.user?._id as string, followeeId);
-  if (result.error) {
-    return res.status(400).json(result);
-  }
-  return res.status(200).json(result);
-});
-
-// Unfollow user
-router.post('/unfollow', auth, async (req: CustomRequest, res) => {
-  const { followeeId } = req.body;
-  const result = await unfollowUser(req.user?._id as string, followeeId);
-  if (result.error) {
-    return res.status(400).json(result);
-  }
-  return res.status(200).json(result);
-});
-
 export default router;
 

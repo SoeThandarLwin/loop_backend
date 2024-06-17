@@ -4,6 +4,7 @@ import { postRouter } from './post/post.router';
 import cors from "cors";
 import "./auth/connection";
 import authRoutes from "./auth/auth_routes";
+import showAllPost from "./showAllPost/showAll_router";
 import { mediaRouter } from "./media/media.router";
 import { createServer, IncomingMessage, ServerResponse } from "http";
 import { Server } from "socket.io";
@@ -11,6 +12,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import User from "./auth/auth_model";
 import { z } from "zod";
 import { sendMediaMessage, sendMessage } from './chat/chat.controller';
+import showOwnerRouter from "./showOwnerPosts/showOwnerPosts_router";
 
 const msgSchema = z.object({
   to: z.string().uuid({message: "Must be 5 or more characters long"}),
@@ -28,9 +30,6 @@ declare global {
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.CONNECTION_URL}/Loop?retryWrites=true&w=majority&appName=Cluster0`;
 
-const connection = await mongoose.connect(uri);
-console.log('connection successful');
-
 const app: Express = express();
 const httpServer = createServer(app);
 const port = process.env.PORT || 3000;
@@ -41,8 +40,10 @@ app.get("/", (req: Request, res: Response) => {
 app.use(cors());
 app.use(express.json());
 app.use('/api/auth', authRoutes);
+app.use('/show', showAllPost );
 app.use('/post', postRouter);
-app.use('/media', mediaRouter)
+app.use('/media', mediaRouter);
+app.use('/owner', showOwnerRouter);
 
 // app.listen(port, () => {
 //   console.log(`[server]: Server is running at http://localhost:${port}`);
