@@ -27,7 +27,7 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>({
   username: { type: String, required: true },
   firstName: { type: String, required: false },
   lastName: { type: String, required: false },
-  profileImage: {type: String , required: true},
+  profileImage: {type: String , required: false},
   email: { type: String, required: true },
   password: { type: String, required: true },
   tokens: [{ token: { type: String, required: true } }],
@@ -52,7 +52,7 @@ userSchema.methods.toJSON = function () {
   const user = this as IUser;
   const userObject = user.toObject();
   userObject._id = this._id.toString();
-  userObject.profileImage = this.profileImage.toString();
+  //userObject.profileImage = this.profileImage.toString();
   delete userObject.password;
   delete userObject.tokens;
   return userObject;

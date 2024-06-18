@@ -7,7 +7,7 @@ export async function getAllPost() {
   try {
     // Get all posts
     const posts = await Post.find();
-    // Filter only artist posts
+    // Filter only artist posts //false == aritist post
     const artistPosts = posts.filter(post => !post.artist_post);
 
    // Extract user UUIDs from artist posts
@@ -43,7 +43,7 @@ export async function getAllPost() {
 export async function getOtherProfilePost(userId: String) {
   //get post by user id
   const posts = await Post.find({user: userId});
-  //filter only artist_post value is false
+  //filter only artist_post value is true == by me
   const artistPosts = posts.filter(post => post.artist_post);
   //filter show post only true
   const showPosts = artistPosts.filter(post => post.show_post);
@@ -59,6 +59,7 @@ export async function getOtherProfilePost(userId: String) {
   const combinedPosts = artistPosts.map(post => ({
     ...post.toJSON(),
     user_name: userMap[post.user!.toString()].username,
+    profileImage: userMap[post.user!.toString()].profileImage,
   }));  
   console.log(combinedPosts);
   return combinedPosts;
