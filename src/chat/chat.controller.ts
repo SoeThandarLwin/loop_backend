@@ -19,7 +19,6 @@ const msgSchema = z.object({
 const mediaMsgSchema = z.object({
   to: z.string().uuid({ message: 'Must be uuid' }),
   content: z.string(),
-  filename: z.string(),
   mimetype: z.string(),
 });
 
@@ -65,10 +64,11 @@ export function sendMediaMessage({ io, socket, user }: any) {
         message.content,
         { encoding: 'base64' },
       );
+
       const newMedia = await new Media({
         _id: file_name,
         user: user.id,
-        filename: message.filename,
+        filename: uuidv4(),
         mimetype: message.mimetype,
         path: `uploads/${file_name}`,
       }).save();
@@ -78,12 +78,12 @@ export function sendMediaMessage({ io, socket, user }: any) {
         from: user.id,
         to: message.to,
         type: 'media',
-        media: message.media,
+        media: newMedia._id,
       }).save();
 
       socket.to(`user:${message.to}`).emit('receive:media_message', {
         from: user.id,
-        content: file_name,
+        media: file_name,
         timestamp: msgResponse.timestamp,
       });
     }
