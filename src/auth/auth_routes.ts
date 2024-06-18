@@ -1,7 +1,8 @@
 import express from 'express';
 import { IUser } from './auth_model';
-import { loginUser, registerUser, checkEmail, updatePassword, editProfile, getUserById} from './auth_controller';
+import { loginUser, registerUser, checkEmail, updatePassword, editProfile, getUserById, uploadProfilePhoto, getUsers} from './auth_controller';
 import auth, { CustomRequest } from './auth';
+import User from './auth_model';
 
 const router = express.Router();
 
@@ -104,6 +105,19 @@ router.put('/editProfile', async(req: CustomRequest, res) => {
 router.get('/getUserById/:id', async (req, res) => {
   const user = await getUserById(req.params.id);
   return res.status(200).json(user);
+});
+
+router.post('/uploadProfilePhoto', uploadProfilePhoto);
+
+// Route to fetch all users
+router.get('/users', async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json(users);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 
