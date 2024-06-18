@@ -83,6 +83,8 @@ export function sendMediaMessage({ io, socket, user }: any) {
 
       socket.to(`user:${message.to}`).emit('receive:media_message', {
         from: user.id,
+        from_user: user.username,
+        to: message.to,
         media: file_name,
         timestamp: msgResponse.timestamp,
       });
