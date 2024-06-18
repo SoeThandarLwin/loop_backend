@@ -1,6 +1,6 @@
 import express from 'express';
 import { IUser } from './auth_model';
-import { loginUser, registerUser, checkEmail, updatePassword, editProfile, getUserById} from './auth_controller';
+import { loginUser, registerUser, checkEmail, updatePassword, editProfile, getUserById, editProfileImage} from './auth_controller';
 import auth, { CustomRequest } from './auth';
 
 const router = express.Router();
@@ -106,6 +106,20 @@ router.get('/getUserById/:id', async (req, res) => {
   return res.status(200).json(user);
 });
 
+//uplaod profile image
+router.put('/editProfileImage', async (req, res) => {
+  const { image, userId, mimeType } = req.body;
+  console.log('hello');
+  const user = await editProfileImage(image, userId, mimeType);
+  if (!user) {
+    return res.status(400).json({
+      error: 'User not found.',
+    });
+  }
+  return res.status(200).json({
+    message: 'true',
+  });
+});
 
 export default router;
 

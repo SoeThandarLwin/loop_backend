@@ -27,6 +27,7 @@ export async function getAllPost() {
      return {
         ...post.toJSON(),
         user_name: user ? user.username : 'Unknown User', // Handle case where user might not be found
+        profileImage: user ? user.profileImage : 'Unknown User',
       };
    });
 
@@ -44,8 +45,10 @@ export async function getOtherProfilePost(userId: String) {
   const posts = await Post.find({user: userId});
   //filter only artist_post value is false
   const artistPosts = posts.filter(post => post.artist_post);
+  //filter show post only true
+  const showPosts = artistPosts.filter(post => post.show_post);
   //fetch user corresponding data
-  const userIds = artistPosts.map(post => post.user);
+  const userIds = showPosts.map(post => post.user);
   const users = await User.find({ _id: { $in: userIds } });
   // Create a map for quick lookup
   const userMap = users.reduce((map, user) => {
@@ -55,7 +58,7 @@ export async function getOtherProfilePost(userId: String) {
   // Combine post data with media and user data, but only include filenames and username
   const combinedPosts = artistPosts.map(post => ({
     ...post.toJSON(),
-    user_name: userMap[post.user!.toString()].username
+    user_name: userMap[post.user!.toString()].username,
   }));  
   console.log(combinedPosts);
   return combinedPosts;

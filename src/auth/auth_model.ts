@@ -7,7 +7,7 @@ export interface IUser extends Document {
   username: string;
   firstName: string;
   lastName: string;
-  profileImage: string;
+  profileImage: string|typeof Schema.Types.UUID;
   email: string;
   password: string;
   tokens: { token: string }[];
@@ -27,7 +27,7 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>({
   username: { type: String, required: true },
   firstName: { type: String, required: false },
   lastName: { type: String, required: false },
-  profileImage: { type: String, required: false },
+  profileImage: {type: String , required: true},
   email: { type: String, required: true },
   password: { type: String, required: true },
   tokens: [{ token: { type: String, required: true } }],
@@ -52,7 +52,7 @@ userSchema.methods.toJSON = function () {
   const user = this as IUser;
   const userObject = user.toObject();
   userObject._id = this._id.toString();
-  delete userObject.profileImage;
+  userObject.profileImage = this.profileImage.toString();
   delete userObject.password;
   delete userObject.tokens;
   return userObject;

@@ -1,6 +1,12 @@
+import { fileURLToPath } from 'url';
 import User from './auth_model';
 import { IUser } from './auth_model';
 import { v4 as uuidv4 } from "uuid";
+import path from 'path';
+import fs from 'fs';
+import { privateEncrypt } from 'crypto';
+import { Media } from '../media/media.model';
+import mime from 'mime';
 
 export const checkEmail = async (email: string) => {
   const existingUser = await User.findOne({ email });
@@ -110,8 +116,61 @@ export async function editProfile(firstName: string, lastName: string, username:
   user.username = username;
   user.firstName = firstName;
   user.lastName = lastName;
-
   await user.save();
+  return user;
+}
+
+//edit profile image
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const fss = fs.promises;
+export async function editProfileImage(image: string, userId: string, mimeType: string){
+  console.log('hello');
+  console.log(image);
+  console.log(userId);
+  console.log(mimeType);
+  const user = await User.findOne({ _id: userId
+  });
+  if (!user) {
+    return null;
+  }
+  // Decode base64 image
+  const imageBuffer = Buffer.from(image, 'base64');
+  console.log(imageBuffer);
+  
+  // Define a unique filename for the image
+  const imageFileName = `${userId}_${Date.now()}`;
+  const imagePath = path.join('uploads', imageFileName); // Update 'path_to_save_images' to your desired directory
+  try {
+    await fs.promises.writeFile(imagePath, imageBuffer);
+    
+    // Create a Media object with information from the saved file
+    const media =  await new Media({
+      _id: uuidv4(),
+      user: user.id,
+      filename: imageFileName, // Use the generated filename
+      mimetype:  mimeType,
+      path: imagePath,
+    }).save();
+    
+    await user.updateOne({profileImage: media._id}).exec();
+    // await user.save();
+    // Save the Media object to the database
+    console.log('Saved media:');
+    console.log('Saved media:', media);
+   
+  } catch (error) {
+    console.error('Error saving image:', error);
+    // Handle the error appropriately, e.g., return an error response
+  }
+  // Save the decoded image to the filesystem
+ // await fs.promises.writeFile(imagePath, imageBuffer);
+
+  // Update user's profile image path
+ 
+  //user.profileImage = image;
+  
+
   return user;
 }
 
