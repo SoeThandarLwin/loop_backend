@@ -2,6 +2,7 @@ import express from 'express';
 import { IUser } from './auth_model';
 import { loginUser, registerUser, checkEmail, updatePassword, editProfile, getUserById, editProfileImage} from './auth_controller';
 import auth, { CustomRequest } from './auth';
+import User from './auth_model';
 
 const router = express.Router();
 

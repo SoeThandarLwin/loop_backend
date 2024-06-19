@@ -8,21 +8,21 @@ export async function getAllPost() {
     // Get all posts
     const posts = await Post.find();
     // Filter only artist posts //false == aritist post
-    const artistPosts = posts.filter(post => !post.artist_post);
-
+    //const artistPosts = posts.filter(post => !post.artist_post);
+ 
    // Extract user UUIDs from artist posts
-   const userIds = artistPosts.map(post => post.user);
+   const userIds = posts.map(post => post.user);
    // Fetch corresponding user details
     const users = await User.find({ _id: { $in: userIds } });
-
+ 
     //Create a map for quick lookup
     const userMap = users.reduce((map, user) => {
       map[user._id.toString()] = user;
       return map;
     }, {} as { [key: string]: any });
-
+ 
     //Combine post data with user data, but only include filenames and username
-   const combinedPosts = artistPosts.map(post => {
+   const combinedPosts = posts.map(post => {
       const user = userMap[post.user!.toString()];
      return {
         ...post.toJSON(),
@@ -30,7 +30,7 @@ export async function getAllPost() {
         profileImage: user ? user.profileImage : 'Unknown User',
       };
    });
-
+ 
     console.log(combinedPosts);
     return combinedPosts;
   } catch (error) {
@@ -38,6 +38,7 @@ export async function getAllPost() {
     throw error;
   }
 }
+ 
 
 //get other post data
 export async function getOtherProfilePost(userId: String) {
