@@ -25,6 +25,7 @@ app.use('/post', postRouter);
 app.use('/media', mediaRouter);
 app.use('/owner', showOwnerRouter);
 app.use('/showOnFeed',showOnFeedRouter);
+app.use(postRouter)
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);

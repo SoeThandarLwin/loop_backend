@@ -13,3 +13,4 @@ const mediaUpload = upload.fields([
 postRouter.post('/', mediaUpload, createPost);
 postRouter.get('/', requestPost);
 postRouter.delete('/', deletePost);
+//postRouter.get('/api/posts', getAllPosts);
