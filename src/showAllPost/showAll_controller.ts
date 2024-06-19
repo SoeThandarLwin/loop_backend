@@ -9,7 +9,6 @@ export async function getAllPost() {
     const posts = await Post.find();
     // Filter only artist posts //false == aritist post
     //const artistPosts = posts.filter(post => !post.artist_post);
- 
    // Extract user UUIDs from artist posts
    const userIds = posts.map(post => post.user);
    // Fetch corresponding user details
