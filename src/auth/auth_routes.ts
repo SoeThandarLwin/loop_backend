@@ -122,6 +122,12 @@ router.put('/editProfileImage', async (req, res) => {
   });
 });
 
+//get users
+router.get('/users', async (req, res) => {
+  const users = await User.find();
+  return res.status(200).json(users);
+});
+
 export default router;
 
 

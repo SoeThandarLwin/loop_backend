@@ -7,6 +7,8 @@ import fs from 'fs';
 import { privateEncrypt } from 'crypto';
 import { Media } from '../media/media.model';
 import mime from 'mime';
+import { Request, Response } from 'express';
+
 
 export const checkEmail = async (email: string) => {
   const existingUser = await User.findOne({ email });
@@ -174,7 +176,23 @@ export async function editProfileImage(image: string, userId: string, mimeType: 
   return user;
 }
 
+/* export const getUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await User.find(); // Fetch all users
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: "error: " });
+  }
+}; */
+//
 
-
+export const getUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await User.find(); // Fetch all users
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: 'error message' });
+  }
+};
 
 
