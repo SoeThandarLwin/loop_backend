@@ -104,24 +104,33 @@ export const changePassword = async (req: Request, res: Response) => {
   }
 }; */
 
-export async function changePassword(username: string, cPassword: string, newPassword: string){
-  const user = await User.findOne({ username });
-  if (!cPassword || !newPassword) {
-    return {
-      error: 'Please provide all the required fields',
-    };
-    }
-    if (!user) {
-      return null;
-    }
-    const existingUser = await User.findByCredentials(username, cPassword);
-    if (!existingUser) {
-      return {
-        error: 'Wrong Password',
-      };
-    }
+export async function changePassword(email: string, currentPassword: string, newPassword: string) {
+  // Find the user based on the provided email
+  const user = await User.findOne({ email });
+
+  // Check if any required field is missing
+  if (!email || !currentPassword || !newPassword) {
+    return 'required';
+  }
+
+  // If no user found with the provided email, return null
+  if (!user) {
+    return null;
+  }
+
+  // Validate the current password with the found user
+  const existingUser = await User.findByCredentials(email, currentPassword);
+  if (!existingUser) {
+    return 'Wrong Password';
+      //res.status(401).json({message: 'Wrong Password'});
+    
+  }
+
+  // If current password is correct, update the password to newPassword
   user.password = newPassword;
   await user.save();
+
+  // Return the updated user object
   return user;
 }
 
@@ -234,5 +243,6 @@ export const getUsers = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'error message' });
   }
 };
+
 
 

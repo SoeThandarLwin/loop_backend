@@ -130,16 +130,27 @@ router.get('/users', async (req, res) => {
 
 //change Password
 router.put('/changePassword', async (req: CustomRequest, res) => {
-  const {username, currentPassword, newPassword} = req.body;
-  const user = await changePassword(username, currentPassword, newPassword);
-  if (!user) {
-    return res.status(400).json({
-      error: 'User not found.',
-    });
+  const {email, currentPassword, newPassword} = req.body;
+  const user = await changePassword(email, currentPassword, newPassword);
+  //json parse user
+  //const msg = user['error'];
+  console.log(user);
+  console.log('auth_routes');
+  if(user == 'Wrong Password'){
+    return res.status(400).json({message : 'false'});
   }
-  return res.status(200).json({
-    message: 'Password updated successfully.',
-  });
+  else if(user == "required"){
+    return res.status(400).json({message : 'false'});
+  }
+  return res.status(200).json({message : 'true'});
+  // if (!user) {
+  //   return res.status(400).json({
+  //     error: 'User not found.',
+  //   });
+  // }
+  // return res.status(200).json({
+  //   message: 'Password updated successfully.',
+  // });
 });
 
 export default router;
