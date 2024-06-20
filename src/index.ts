@@ -13,7 +13,6 @@ import User from "./auth/auth_model";
 import { z } from "zod";
 import { sendMediaMessage, sendMessage } from './chat/chat.controller';
 import showOwnerRouter from "./showOwnerPosts/showOwnerPosts_router";
-
 const msgSchema = z.object({
   to: z.string().uuid({message: "Must be 5 or more characters long"}),
   content: z.string(),
@@ -38,12 +37,15 @@ app.get("/", (req: Request, res: Response) => {
 }); 
 
 app.use(cors());
+app.use(express.json({ limit: '50mb' }));
+//app.use(express.json({limit: '59mb'}));
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/show', showAllPost );
 app.use('/post', postRouter);
 app.use('/media', mediaRouter);
 app.use('/owner', showOwnerRouter);
+app.use(postRouter)
 
 // app.listen(port, () => {
 //   console.log(`[server]: Server is running at http://localhost:${port}`);

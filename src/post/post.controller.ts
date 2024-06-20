@@ -26,7 +26,6 @@ export async function createPost(req: Request, res: Response) {
     case 'false': artistPost = false; break;
     default: return res.status(400).send({ message: 'Invalid post status value'});
   }
-
   if (!name)
     return res.status(400).send({ message: 'Name cannot be empty.' });
 
@@ -46,7 +45,7 @@ export async function createPost(req: Request, res: Response) {
   const files = req.files as { [fieldname: string]: Express.Multer.File[] };
   const before = files['before'][0];
   const reference = files['reference'][0];
-
+console.log(before);
   const getHeader = req.headers.authorization;
   const token = getHeader?.split(' ')[1];
   const user: string | JwtPayload = jwt.verify(
@@ -123,3 +122,40 @@ export async function deletePost(req: Request, res: Response) {
 
   return res.status(204).send();
 }
+
+/* export async function getAllPosts() {
+  try {
+    // Get all posts
+    const posts = await Post.find();
+    // Filter only artist posts //false == aritist post
+    //const artistPosts = posts.filter(post => !post.artist_post);
+ 
+   // Extract user UUIDs from artist posts
+   const userIds = posts.map(post => post.user);
+   // Fetch corresponding user details
+    const users = await User.find({ _id: { $in: userIds } });
+ 
+    //Create a map for quick lookup
+    const userMap = users.reduce((map, user) => {
+      map[user._id.toString()] = user;
+      return map;
+    }, {} as { [key: string]: any });
+ 
+    //Combine post data with user data, but only include filenames and username
+   const combinedPosts = posts.map(post => {
+      const user = userMap[post.user!.toString()];
+     return {
+        ...post.toJSON(),
+        user_name: user ? user.username : 'Unknown User', // Handle case where user might not be found
+        profileImage: user ? user.profileImage : 'Unknown User',
+      };
+   });
+ 
+    console.log(combinedPosts);
+    return combinedPosts;
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    throw error;
+  }
+} */
+ 

@@ -1,7 +1,8 @@
 import express from 'express';
 import { IUser } from './auth_model';
-import { loginUser, registerUser, checkEmail, updatePassword} from './auth_controller';
+import { loginUser, registerUser, checkEmail, updatePassword, editProfile, getUserById, editProfileImage} from './auth_controller';
 import auth, { CustomRequest } from './auth';
+import User from './auth_model';
 
 const router = express.Router();
 
@@ -85,5 +86,48 @@ router.put('/updatePassword', async (req: CustomRequest, res) => {
     message: 'Password updated successfully.',
   });
 });
+
+// Edit profile
+router.put('/editProfile', async(req: CustomRequest, res) => {
+  const {firstName, lastName, username, email } = req.body;
+  const user = await editProfile(firstName, lastName, username, email);
+  if (!user) {
+    return res.status(400).json({
+      error: 'User not found.',
+    });
+  }
+  return res.status(200).json({
+    message: 'Profile updated successfully.',
+  })
+});
+
+//get user by id 
+router.get('/getUserById/:id', async (req, res) => {
+  const user = await getUserById(req.params.id);
+  return res.status(200).json(user);
+});
+
+//uplaod profile image
+router.put('/editProfileImage', async (req, res) => {
+  const { image, userId, mimeType } = req.body;
+  console.log('hello');
+  const user = await editProfileImage(image, userId, mimeType);
+  if (!user) {
+    return res.status(400).json({
+      error: 'User not found.',
+    });
+  }
+  return res.status(200).json({
+    message: 'true',
+  });
+});
+
+//get users
+router.get('/users', async (req, res) => {
+  const users = await User.find();
+  return res.status(200).json(users);
+});
+
 export default router;
+
 

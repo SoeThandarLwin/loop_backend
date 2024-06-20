@@ -10,6 +10,7 @@ export const postSchema = new Schema ({
     original_photo: { type: Schema.Types.UUID, ref: 'Media', required: true},
     reference_photo: { type: Schema.Types.UUID, ref: 'Media', required: true},
     description: String,
+    show_post: { type: Boolean, default: true }
 })
 
 postSchema.methods.toJSON = function () {
