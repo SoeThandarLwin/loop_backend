@@ -74,17 +74,57 @@ export async function getUserById(userId: string) {
   return user;
 }
 
-export async function changePw (password: string) {
-  const user = await User.findOne({password});
-  if (!user) {
-    return {
-      error: 'Wrong Current Password',
-    };
+/* // Handle POST request to change password
+export const changePassword = async (req: Request, res: Response) => {
+  const { currentPassword, newPassword } = req.body;
+
+  try {
+    // Check if user is authenticated (you can use middleware for this)
+    const user = await User.findById(req._id);
+
+    if (!user) {
+      return res.status(404).json({ msg: 'User not found' });
+    }
+
+    // Check if current password matches user's saved password
+    const isMatch = await user.matchPassword(currentPassword);
+
+    if (!isMatch) {
+      return res.status(400).json({ msg: 'Invalid current password' });
+    }
+
+    // Update user's password
+    user.password = newPassword;
+    await user.save();
+
+    res.json({ msg: 'Password updated successfully' });
+  } catch (err) {
+    console.error('error');
+    res.status(500).send('Server Error');
   }
-  user.password = password;
+}; */
+
+export async function changePassword(username: string, cPassword: string, newPassword: string){
+  const user = await User.findOne({ username });
+  if (!cPassword || !newPassword) {
+    return {
+      error: 'Please provide all the required fields',
+    };
+    }
+    if (!user) {
+      return null;
+    }
+    const existingUser = await User.findByCredentials(username, cPassword);
+    if (!existingUser) {
+      return {
+        error: 'Wrong Password',
+      };
+    }
+  user.password = newPassword;
   await user.save();
   return user;
-};
+}
+
 
 /* export const changePw = async (user: Partial<IUser>) => {
   const {password } = user;

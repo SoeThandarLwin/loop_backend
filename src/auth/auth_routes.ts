@@ -1,6 +1,6 @@
 import express from 'express';
 import { IUser } from './auth_model';
-import { loginUser, registerUser, checkEmail, updatePassword, editProfile, getUserById, editProfileImage} from './auth_controller';
+import { loginUser, registerUser, checkEmail, updatePassword, editProfile, getUserById, editProfileImage, changePassword} from './auth_controller';
 import auth, { CustomRequest } from './auth';
 import User from './auth_model';
 
@@ -126,6 +126,20 @@ router.put('/editProfileImage', async (req, res) => {
 router.get('/users', async (req, res) => {
   const users = await User.find();
   return res.status(200).json(users);
+});
+
+//change Password
+router.put('/changePassword', async (req: CustomRequest, res) => {
+  const {username, currentPassword, newPassword} = req.body;
+  const user = await changePassword(username, currentPassword, newPassword);
+  if (!user) {
+    return res.status(400).json({
+      error: 'User not found.',
+    });
+  }
+  return res.status(200).json({
+    message: 'Password updated successfully.',
+  });
 });
 
 export default router;
