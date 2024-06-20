@@ -8,9 +8,9 @@ export async function getAllPost() {
     // Get all posts
     const posts = await Post.find();
     // Filter only artist posts //false == aritist post
-    //const artistPosts = posts.filter(post => !post.artist_post);
+    const showPosts = posts.filter(post => post.show_post);
    // Extract user UUIDs from artist posts
-   const userIds = posts.map(post => post.user);
+   const userIds = showPosts.map(post => post.user);
    // Fetch corresponding user details
     const users = await User.find({ _id: { $in: userIds } });
  
@@ -21,7 +21,7 @@ export async function getAllPost() {
     }, {} as { [key: string]: any });
  
     //Combine post data with user data, but only include filenames and username
-   const combinedPosts = posts.map(post => {
+   const combinedPosts = showPosts.map(post => {
       const user = userMap[post.user!.toString()];
      return {
         ...post.toJSON(),
@@ -65,4 +65,16 @@ export async function getOtherProfilePost(userId: String) {
   return combinedPosts;
 
 }
+
+//update post status
+export async function updatePostStatus(postId: String, status: boolean) {
+  const post = await Post.findOne({_id: postId});
+  if (!post) {
+    return null;
+  }
+  post.show_post = status;
+  await post.save();
+  return post;
+}
+
 
