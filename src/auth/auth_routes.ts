@@ -3,6 +3,8 @@ import { IUser } from './auth_model';
 import { loginUser, registerUser, checkEmail, updatePassword, editProfile, getUserById, editProfileImage} from './auth_controller';
 import auth, { CustomRequest } from './auth';
 import User from './auth_model';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import bodyParser from 'body-parser';
 
 const router = express.Router();
 
@@ -127,6 +129,22 @@ router.get('/users', async (req, res) => {
   const users = await User.find();
   return res.status(200).json(users);
 });
+
+//update Fcm
+router.patch('/update_fcm', bodyParser() ,async(req, res) => {
+  const getHeader = req.headers.authorization;
+  const token = getHeader?.split(' ')[1];
+  const user: string | JwtPayload = jwt.verify(
+    token!,
+    process.env.JWT_KEY as string,
+  ) as typeof User;
+  if(!user) return res.json({message: 'invalid token'}).send();
+
+  const { fcm_token } = req.body;
+  await User.findByIdAndUpdate(user.id, {fcm_token: fcm_token}).exec();
+
+  return res.status(200).send();
+})
 
 export default router;
 
