@@ -6,6 +6,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { Media } from '../media/media.model';
 import User from '../auth/auth_model';
+import admin from 'firebase-admin';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,7 +20,6 @@ const msgSchema = z.object({
 const mediaMsgSchema = z.object({
   to: z.string().uuid({ message: 'Must be uuid' }),
   content: z.string(),
-  filename: z.string(),
   mimetype: z.string(),
 });
 
@@ -50,6 +50,20 @@ export function sendMessage({ io, socket, user }: any) {
         content: message.content,
         timestamp: msgResponse.timestamp,
       });
+
+      const recipient = await User.findById(message.to).exec();
+
+      if (recipient) {
+        const msg = {
+          token: recipient.fcm_token,
+          data: {
+            title: `Message from ${user.username}`,
+            body: message.content,
+          }
+        }
+
+        const resp = await admin.messaging().send(msg);
+      }
     }
   };
 }
@@ -86,6 +100,20 @@ export function sendMediaMessage({ io, socket, user }: any) {
         content: file_name,
         timestamp: msgResponse.timestamp,
       });
+
+      const recipient = await User.findById(message.to).exec();
+
+      if (recipient) {
+        const msg = {
+          token: recipient.fcm_token,
+          data: {
+            title: `Message from ${user.username}`,
+            body: `http://10.0.2.2:3000/media?media_id=${file_name}`
+          }
+        }
+
+        const resp = await admin.messaging().send(msg);
+      }
     }
   };
 }
