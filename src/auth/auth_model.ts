@@ -11,6 +11,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   tokens: { token: string }[];
+  fcm_token: string;
 }
  
 export interface IUserMethods {
@@ -31,6 +32,7 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>({
   email: { type: String, required: true },
   password: { type: String, required: true },
   tokens: [{ token: { type: String, required: true } }],
+  fcm_token: String,
 });
  
 userSchema.pre('save', async function (next) {

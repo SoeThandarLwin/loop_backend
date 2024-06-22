@@ -114,10 +114,17 @@ export async function deletePost(req: Request, res: Response) {
       _id: post.reference_photo,
     }).exec();
 
-    if (originalPhoto)
-      await fss.unlink(path.join(__dirname, '../..', originalPhoto.path));
-    if (referencePhoto)
-      await fss.unlink(path.join(__dirname, '../..', referencePhoto.path));
+    if (originalPhoto) {
+      try {
+        await fss.unlink(path.join(__dirname, '../..', originalPhoto.path));
+      } catch (e) {}
+    }
+
+    if (referencePhoto) {
+      try {
+        await fss.unlink(path.join(__dirname, '../..', referencePhoto.path));
+      } catch (e) {}
+    }
   }
 
   return res.status(204).send();
