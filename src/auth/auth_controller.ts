@@ -8,6 +8,8 @@ import { privateEncrypt } from 'crypto';
 import { Media } from '../media/media.model';
 import mime from 'mime';
 import { Request, Response } from 'express';
+import { Post } from '../post/post.model';
+
 
 
 export const checkEmail = async (email: string) => {
@@ -244,7 +246,29 @@ export const getUsers = async (req: Request, res: Response) => {
   }
 };
 
+// Delete account function
 export const deleteAccount = async (req: Request, res: Response) => {
+  const userId = req.params.userId;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Delete all posts by the user
+    await Post.deleteMany({ owner: userId });
+
+    // Delete the user
+    await User.findByIdAndDelete(userId);
+
+    res.status(204).send(); // No Content
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting account', error });
+  }
+};
+
+/* export const deleteAccount = async (req: Request, res: Response) => {
   const userId = req.params.userId;
 
   try {
@@ -258,7 +282,7 @@ export const deleteAccount = async (req: Request, res: Response) => {
   } catch (error) {
     res.status(500).json({ message: 'Error deleting account', error });
   }
-};
+}; */
 
 
 
