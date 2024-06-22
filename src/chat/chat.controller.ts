@@ -57,7 +57,7 @@ export function sendMessage({ io, socket, user }: any) {
 
       const recipient = await User.findById(message.to).exec();
 
-      if (recipient) {
+      if (recipient && !!recipient.fcm_token) {
         const msg = {
           token: recipient.fcm_token,
           data: {
@@ -110,7 +110,7 @@ export function sendMediaMessage({ io, socket, user }: any) {
 
       const recipient = await User.findById(message.to).exec();
 
-      if (recipient && recipient.fcm_token) {
+      if (recipient && !!recipient.fcm_token) {
         const msg = {
           token: recipient.fcm_token,
           data: {
@@ -131,7 +131,7 @@ export async function getChatHistory(req: Request, res: Response) {
       { from: req.query.user_id, to: req.user!.id },
       { to: req.query.user_id, from: req.user!.id },
     ],
-  }).exec();
+  }).sort({ timestamp: 1}).exec();
 
   return res.json({ data: messages }).send();
 }
