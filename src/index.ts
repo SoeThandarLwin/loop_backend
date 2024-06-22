@@ -20,12 +20,20 @@ const msgSchema = z.object({
   content: z.string(),
 })
 
+export type UserClaim = {
+  id: string,
+  username: string,
+  iat: number,
+}
 
 declare global {
   namespace Express {
     interface User {
       id: number;
       username: string;
+    }
+    export interface Request {
+      user?: UserClaim,
     }
   }
 }

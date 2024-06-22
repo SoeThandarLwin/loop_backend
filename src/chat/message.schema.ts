@@ -15,6 +15,8 @@ messageSchema.methods.toJSON = function () {
   messageObject._id = this._id.toString();
   messageObject.from = this.from.toString();
   messageObject.to = this.to.toString();
-  messageObject.media = this.media.toString();
+  if (messageObject.type === 'media' && this.media !== '' && !!this.media) {
+    messageObject.media = this.media.toString();
+  }
   return messageObject;
 };

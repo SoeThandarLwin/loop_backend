@@ -52,6 +52,7 @@ export function sendMessage({ io, socket, user }: any) {
         to: message.to,
         content: message.content,
         timestamp: msgResponse.timestamp,
+        type: 'text',
       });
 
       const recipient = await User.findById(message.to).exec();
@@ -95,18 +96,21 @@ export function sendMediaMessage({ io, socket, user }: any) {
         from: user.id,
         to: message.to,
         type: 'media',
-        media: message.media,
+        media: file_name,
       }).save();
 
       socket.to(`user:${message.to}`).emit('receive:media_message', {
         from: user.id,
         content: file_name,
+        type: 'media',
         timestamp: msgResponse.timestamp,
+        from_user: user.username,
+        to: message.to,
       });
 
       const recipient = await User.findById(message.to).exec();
 
-      if (recipient) {
+      if (recipient && recipient.fcm_token) {
         const msg = {
           token: recipient.fcm_token,
           data: {
@@ -119,6 +123,17 @@ export function sendMediaMessage({ io, socket, user }: any) {
       }
     }
   };
+}
+
+export async function getChatHistory(req: Request, res: Response) {
+  const messages = await Message.find({
+    $or: [
+      { from: req.query.user_id, to: req.user!.id },
+      { to: req.query.user_id, from: req.user!.id },
+    ],
+  }).exec();
+
+  return res.json({ data: messages }).send();
 }
 
 export async function getPeopleInConversation(req: Request, res: Response) {
