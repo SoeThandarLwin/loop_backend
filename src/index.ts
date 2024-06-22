@@ -14,6 +14,7 @@ import { z } from "zod";
 import { sendMediaMessage, sendMessage } from './chat/chat.controller';
 import showOwnerRouter from "./showOwnerPosts/showOwnerPosts_router";
 import initializeFirebase from "./firebase";
+import { chatRouter } from "./chat/chat.router";
 const msgSchema = z.object({
   to: z.string().uuid({message: "Must be 5 or more characters long"}),
   content: z.string(),
@@ -47,6 +48,7 @@ app.use('/show', showAllPost );
 app.use('/post', postRouter);
 app.use('/media', mediaRouter);
 app.use('/owner', showOwnerRouter);
+app.use('/chat', chatRouter);
 app.use(postRouter)
 
 // app.listen(port, () => {
