@@ -1,6 +1,6 @@
 import express from 'express';
 import { IUser } from './auth_model';
-import { loginUser, registerUser, checkEmail, updatePassword, editProfile, getUserById, editProfileImage, changePassword} from './auth_controller';
+import { loginUser, registerUser, checkEmail, updatePassword, editProfile, getUserById, editProfileImage, changePassword, deleteAccount} from './auth_controller';
 import auth, { CustomRequest } from './auth';
 import User from './auth_model';
 
@@ -153,6 +153,7 @@ router.put('/changePassword', async (req: CustomRequest, res) => {
   // });
 });
 
+router.delete('/deleteAccount/:userId', deleteAccount);
 export default router;
 
 
