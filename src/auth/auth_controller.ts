@@ -257,7 +257,8 @@ export const deleteAccount = async (req: Request, res: Response) => {
     }
 
     // Delete all posts by the user
-    await Post.deleteMany({ owner: userId });
+    const delPost = await Post.deleteMany({ user: userId });
+    console.log(delPost);
 
     // Delete the user
     await User.findByIdAndDelete(userId);
