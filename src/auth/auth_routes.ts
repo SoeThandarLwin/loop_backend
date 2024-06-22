@@ -1,6 +1,6 @@
 import express from 'express';
 import { IUser } from './auth_model';
-import { loginUser, registerUser, checkEmail, updatePassword, editProfile, getUserById, editProfileImage} from './auth_controller';
+import { loginUser, registerUser, checkEmail, updatePassword, editProfile, getUserById, editProfileImage, changePassword, deleteAccount} from './auth_controller';
 import auth, { CustomRequest } from './auth';
 import User from './auth_model';
 import jwt, { JwtPayload } from 'jsonwebtoken';
@@ -146,6 +146,32 @@ router.patch('/update_fcm', bodyParser() ,async(req, res) => {
   return res.status(200).send();
 })
 
+//change Password
+router.put('/changePassword', async (req: CustomRequest, res) => {
+  const {email, currentPassword, newPassword} = req.body;
+  const user = await changePassword(email, currentPassword, newPassword);
+  //json parse user
+  //const msg = user['error'];
+  console.log(user);
+  console.log('auth_routes');
+  if(user == 'Wrong Password'){
+    return res.status(400).json({message : 'false'});
+  }
+  else if(user == "required"){
+    return res.status(400).json({message : 'false'});
+  }
+  return res.status(200).json({message : 'true'});
+  // if (!user) {
+  //   return res.status(400).json({
+  //     error: 'User not found.',
+  //   });
+  // }
+  // return res.status(200).json({
+  //   message: 'Password updated successfully.',
+  // });
+});
+
+router.delete('/deleteAccount/:userId', deleteAccount);
 export default router;
 
 

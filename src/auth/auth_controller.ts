@@ -8,6 +8,8 @@ import { privateEncrypt } from 'crypto';
 import { Media } from '../media/media.model';
 import mime from 'mime';
 import { Request, Response } from 'express';
+import { Post } from '../post/post.model';
+
 
 
 export const checkEmail = async (email: string) => {
@@ -74,17 +76,66 @@ export async function getUserById(userId: string) {
   return user;
 }
 
-export async function changePw (password: string) {
-  const user = await User.findOne({password});
-  if (!user) {
-    return {
-      error: 'Wrong Current Password',
-    };
+/* // Handle POST request to change password
+export const changePassword = async (req: Request, res: Response) => {
+  const { currentPassword, newPassword } = req.body;
+
+  try {
+    // Check if user is authenticated (you can use middleware for this)
+    const user = await User.findById(req._id);
+
+    if (!user) {
+      return res.status(404).json({ msg: 'User not found' });
+    }
+
+    // Check if current password matches user's saved password
+    const isMatch = await user.matchPassword(currentPassword);
+
+    if (!isMatch) {
+      return res.status(400).json({ msg: 'Invalid current password' });
+    }
+
+    // Update user's password
+    user.password = newPassword;
+    await user.save();
+
+    res.json({ msg: 'Password updated successfully' });
+  } catch (err) {
+    console.error('error');
+    res.status(500).send('Server Error');
   }
-  user.password = password;
+}; */
+
+export async function changePassword(email: string, currentPassword: string, newPassword: string) {
+  // Find the user based on the provided email
+  const user = await User.findOne({ email });
+
+  // Check if any required field is missing
+  if (!email || !currentPassword || !newPassword) {
+    return 'required';
+  }
+
+  // If no user found with the provided email, return null
+  if (!user) {
+    return null;
+  }
+
+  // Validate the current password with the found user
+  const existingUser = await User.findByCredentials(email, currentPassword);
+  if (!existingUser) {
+    return 'Wrong Password';
+      //res.status(401).json({message: 'Wrong Password'});
+    
+  }
+
+  // If current password is correct, update the password to newPassword
+  user.password = newPassword;
   await user.save();
+
+  // Return the updated user object
   return user;
-};
+}
+
 
 /* export const changePw = async (user: Partial<IUser>) => {
   const {password } = user;
@@ -194,5 +245,45 @@ export const getUsers = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'error message' });
   }
 };
+
+// Delete account function
+export const deleteAccount = async (req: Request, res: Response) => {
+  const userId = req.params.userId;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Delete all posts by the user
+    const delPost = await Post.deleteMany({ user: userId });
+    console.log(delPost);
+
+    // Delete the user
+    await User.findByIdAndDelete(userId);
+
+    res.status(204).send(); // No Content
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting account', error });
+  }
+};
+
+/* export const deleteAccount = async (req: Request, res: Response) => {
+  const userId = req.params.userId;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    await User.findByIdAndDelete(userId);
+    res.status(204).send(); // No Content
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting account', error });
+  }
+}; */
+
 
 
