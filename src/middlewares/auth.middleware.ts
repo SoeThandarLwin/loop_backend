@@ -2,6 +2,7 @@ import User from '../auth/auth_model';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 
+
 export default async function authMiddleware(
   req: Request,
   res: Response,
@@ -26,6 +27,5 @@ export default async function authMiddleware(
   if (!user) return next(new Error('invalid token'));
 
   req.user = { id: user.id, username: user.username, iat: user.iat! };
-
   return next();
 }

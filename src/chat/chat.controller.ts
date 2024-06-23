@@ -156,6 +156,9 @@ export async function getPeopleInConversation(req: Request, res: Response) {
     },
   ]).exec();
 
+  if (people.length === 0)
+    return res.status(200).json({ data: [] }).send();
+
   const uuids = Array.from(
     new Set([
       ...people[0].to.map((p: any) => p.toString()),
