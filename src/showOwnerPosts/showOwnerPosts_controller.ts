@@ -23,7 +23,7 @@ export async function getAllPost() {
     ...post.toJSON(),
     user_name: userMap[post.user!.toString()].username
   }));
-console.log(combinedPosts);
+//console.log(combinedPosts);
 return combinedPosts;
 
 }
@@ -46,7 +46,7 @@ export async function getOwnerProfilePost(userId: String) {
     user_name: userMap[post.user!.toString()].username,
     profileImage: userMap[post.user!.toString()].profileImage,
   }));  
-  console.log(combinedPosts);
+  //console.log(combinedPosts);
   return combinedPosts;
 
 }

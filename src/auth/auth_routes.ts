@@ -45,7 +45,7 @@ router.post('/checkEmail', async (req, res) => {
 
 // Fetch logged in user
 router.get('/me', authMiddleware, async (req: Request, res: Response) => {
-  console.log(req.user);
+  //console.log(req.user);
   return res.status(200).json({
     user: req.user,
   });

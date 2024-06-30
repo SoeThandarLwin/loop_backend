@@ -157,9 +157,6 @@ const __dirname = path.dirname(__filename);
 const fss = fs.promises;
 
 export async function editProfileImage(image: string, userId: string, mimeType: string){
-  console.log(image);
-  console.log(userId);
-  console.log(mimeType);
   const user = await User.findOne({ _id: userId});
   if (!user) {
     return null;
@@ -183,16 +180,13 @@ export async function editProfileImage(image: string, userId: string, mimeType: 
     }).save();
     
     await user.updateOne({profileImage: media._id}).exec();
-    // await user.save();
-    // Save the Media object to the database
-    console.log('Saved media:');
-    console.log('Saved media:', media);
+   
    
   } catch (error) {
     console.error('Error saving image:', error);
     // Handle the error appropriately, e.g., return an error response
   }
-  console.log('User image:', user);
+  //console.log('User image:', user);
 
   return user;
 }
@@ -232,9 +226,9 @@ export const deleteAccount = async (req: Request, res: Response) => {
     const delMsgFrom = await Message.deleteMany({ from: userId });
      //Delete messages send to the user
     const delMsgTo = await Message.deleteMany({ to: userId });
-    console.log(delPost);
-    console.log(delMsgFrom);
-    console.log(delMsgTo);
+    // console.log(delPost);
+    // console.log(delMsgFrom);
+    // console.log(delMsgTo);
 
     // Delete the user
     await User.findByIdAndDelete(userId);

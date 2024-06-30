@@ -30,7 +30,7 @@ export async function getAllPost() {
       };
    });
  
-    console.log(combinedPosts);
+    //console.log(combinedPosts);
     return combinedPosts;
   } catch (error) {
     console.error('Error fetching posts:', error);
@@ -61,7 +61,7 @@ export async function getOtherProfilePost(userId: String) {
     user_name: userMap[post.user!.toString()].username,
     profileImage: userMap[post.user!.toString()].profileImage,
   }));  
-  console.log(combinedPosts);
+  //console.log(combinedPosts);
   return combinedPosts;
 
 }

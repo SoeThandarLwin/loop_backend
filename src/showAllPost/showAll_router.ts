@@ -12,7 +12,7 @@ router.get('/otherProfilePost/:id', async (req, res) => {
 });
 router.put('/updatePost', async (req, res) => {
     const { postId, dropdownValue } = req.body;
-    console.log(dropdownValue);
+    //console.log(dropdownValue);
     const posts = await updatePostStatus(postId, dropdownValue);
     return res.status(200).json(posts);
 });

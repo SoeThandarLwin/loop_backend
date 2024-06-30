@@ -40,12 +40,12 @@ export async function createPost(req: Request, res: Response) {
       .status(400)
       .send({ message: 'Before photo and reference photo must be included.' });
 
-  console.log(req.files);
+  //console.log(req.files);
 
   const files = req.files as { [fieldname: string]: Express.Multer.File[] };
   const before = files['before'][0];
   const reference = files['reference'][0];
-console.log(before);
+//console.log(before);
   const getHeader = req.headers.authorization;
   const token = getHeader?.split(' ')[1];
   const user: string | JwtPayload = jwt.verify(

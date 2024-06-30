@@ -31,7 +31,7 @@ export async function getShowOnFeedPost() {
 //return userId from post data
 export async function getUserId(postId: string) {
   const post = await Post.findById(postId);
-  console.log(post?.user);
+  //console.log(post?.user);
     return post?.user;
 
 }
@@ -39,7 +39,7 @@ export async function getUserId(postId: string) {
 //get user data by userId
 export async function getUser(userId: string) {
   const user = await User.findById(userId);
-  console.log(user);
+  //console.log(user);
     return user;
 }
 
