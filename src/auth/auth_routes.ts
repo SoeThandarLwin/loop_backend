@@ -45,6 +45,7 @@ router.post('/checkEmail', async (req, res) => {
 
 // Fetch logged in user
 router.get('/me', authMiddleware, async (req: Request, res: Response) => {
+  console.log(req.user);
   return res.status(200).json({
     user: req.user,
   });
@@ -52,18 +53,6 @@ router.get('/me', authMiddleware, async (req: Request, res: Response) => {
 const tokenBlacklist = new Set();
 // Logout user
 router.post('/logout', authMiddleware, async (req: Request, res: Response) => {
-    
-  // const authHeader = req.headers.authorization;
-  // if (!authHeader) {
-  //   return res.status(401).send();
-  // }
-  // else{
-  //   const token = authHeader.substring(7);
-  //   tokenBlacklist.add(token);
-  //   return res.status(200).json({
-  //     message: 'Logged out successfully.',
-  //     });
-  // }
   if (!req.headers || !req.headers.authorization) {
     return res.status(400).send('No authorization header provided');
   }
@@ -84,7 +73,7 @@ router.post('/logout', authMiddleware, async (req: Request, res: Response) => {
 
 
 // Update password
-router.put('/updatePassword',async (res: Response, req: Request) => {
+router.put('/updatePassword',async (req: Request, res: Response) => {
   const {email, password} = req.body;
   const user = await updatePassword(email, password);
   if (!user) {
@@ -98,7 +87,7 @@ router.put('/updatePassword',async (res: Response, req: Request) => {
 });
 
 // Edit profile
-router.put('/editProfile', async (res: Response, req: Request) => {
+router.put('/editProfile', async (req: Request, res: Response) => {
   const {firstName, lastName, username, email } = req.body;
   const user = await editProfile(firstName, lastName, username, email);
   if (!user) {
@@ -120,7 +109,6 @@ router.get('/getUserById/:id', async (req, res) => {
 //uplaod profile image
 router.put('/editProfileImage', async (req, res) => {
   const { image, userId, mimeType } = req.body;
-  console.log('hello');
   const user = await editProfileImage(image, userId, mimeType);
   if (!user) {
     return res.status(400).json({
@@ -139,13 +127,13 @@ router.get('/users', async (req, res) => {
 });
 
 //change Password
-router.put('/changePassword', async (res: Response, req: Request) => {
+router.put('/changePassword', async (req: Request, res: Response) => {
   const {email, currentPassword, newPassword} = req.body;
   const user = await changePassword(email, currentPassword, newPassword);
   //json parse user
   //const msg = user['error'];
-  console.log(user);
-  console.log('auth_routes');
+  //console.log(user);
+  //console.log('auth_routes');
   if(user == 'Wrong Password'){
     return res.status(400).json({message : 'false'});
   }

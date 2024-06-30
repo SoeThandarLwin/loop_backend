@@ -9,9 +9,10 @@ import { Media } from '../media/media.model';
 import mime from 'mime';
 import { Request, Response } from 'express';
 import { Post } from '../post/post.model';
+import { Message } from '../chat/message.model';
 
 
-
+//check email to send reset password email
 export const checkEmail = async (email: string) => {
   const existingUser = await User.findOne({ email });
   return !!existingUser;
@@ -137,29 +138,6 @@ export async function changePassword(email: string, currentPassword: string, new
 }
 
 
-/* export const changePw = async (user: Partial<IUser>) => {
-  const {password } = user;
-  if (!password) {
-    return {
-      error: 'Please provide all the required fields',
-    };
-  }
-  const existingUser = await User.findOne({password});
-  if (!existingUser) {
-    return {
-      error: 'Wrong Current Password',
-    };
-  } else if (existingUser){
-    return{
-
-    }
-  }
-  const token = await existingUser.generateAuthToken();
-  return {
-    user: existingUser,
-    token,
-  };
-}; */
 
 export async function editProfile(firstName: string, lastName: string, username: string, email: string){
   const user = await User.findOne({ email });
@@ -177,23 +155,21 @@ export async function editProfile(firstName: string, lastName: string, username:
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const fss = fs.promises;
+
 export async function editProfileImage(image: string, userId: string, mimeType: string){
-  console.log('hello');
   console.log(image);
   console.log(userId);
   console.log(mimeType);
-  const user = await User.findOne({ _id: userId
-  });
+  const user = await User.findOne({ _id: userId});
   if (!user) {
     return null;
   }
   // Decode base64 image
   const imageBuffer = Buffer.from(image, 'base64');
-  console.log(imageBuffer);
   
-  // Define a unique filename for the image
+  // Definning unique filename for the image
   const imageFileName = `${userId}_${Date.now()}`;
-  const imagePath = path.join('uploads', imageFileName); // Update 'path_to_save_images' to your desired directory
+  const imagePath = path.join('uploads', imageFileName); 
   try {
     await fs.promises.writeFile(imagePath, imageBuffer);
     
@@ -216,13 +192,7 @@ export async function editProfileImage(image: string, userId: string, mimeType: 
     console.error('Error saving image:', error);
     // Handle the error appropriately, e.g., return an error response
   }
-  // Save the decoded image to the filesystem
- // await fs.promises.writeFile(imagePath, imageBuffer);
-
-  // Update user's profile image path
- 
-  //user.profileImage = image;
-  
+  console.log('User image:', user);
 
   return user;
 }
@@ -258,7 +228,13 @@ export const deleteAccount = async (req: Request, res: Response) => {
 
     // Delete all posts by the user
     const delPost = await Post.deleteMany({ user: userId });
+    //Delete messages send by the user
+    const delMsgFrom = await Message.deleteMany({ from: userId });
+     //Delete messages send to the user
+    const delMsgTo = await Message.deleteMany({ to: userId });
     console.log(delPost);
+    console.log(delMsgFrom);
+    console.log(delMsgTo);
 
     // Delete the user
     await User.findByIdAndDelete(userId);

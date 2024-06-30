@@ -23,6 +23,10 @@ const msgSchema = z.object({
 export type UserClaim = {
   id: string,
   username: string,
+  firstName: string,
+  lastName: string,
+  email: string,
+  profileImage: string,
   iat: number,
 }
 
@@ -31,6 +35,10 @@ declare global {
     interface User {
       id: number;
       username: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+      profileImage: string;
     }
     export interface Request {
       user?: UserClaim,

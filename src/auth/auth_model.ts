@@ -34,7 +34,8 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>({
   tokens: [{ token: { type: String, required: true } }],
   fcm_token: String,
 });
- 
+
+//password hash
 userSchema.pre('save', async function (next) {
   if (this.isModified('password')) {
     this.password = await bcrypt.hash(this.password, 8);
@@ -44,8 +45,9 @@ userSchema.pre('save', async function (next) {
  
 userSchema.methods.generateAuthToken = async function () {
   const user = this;
-  const token = jwt.sign({ id: user._id?.toString(), username: user.username }, process.env.JWT_KEY as string);
+  const token = jwt.sign({ id: user._id?.toString(), username: user.username, firstName: user.firstName ? user.firstName : '', lastName: user.lastName ? user.lastName : '', email: user.email ? user.email : '', profileImage: user.profileImage ? user.profileImage : ''}, process.env.JWT_KEY as string);
   user.tokens = user.tokens.concat({ token });
+  console.log('token', token);
   await user.save();
   return token;
 };

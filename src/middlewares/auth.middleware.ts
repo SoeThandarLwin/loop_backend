@@ -25,7 +25,6 @@ export default async function authMiddleware(
   ) as typeof User;
 
   if (!user) return next(new Error('invalid token'));
-
-  req.user = { id: user.id, username: user.username, iat: user.iat! };
+  req.user = { id: user.id, username: user.username, firstName: user.firstName, lastName: user.lastName, email: user.email, profileImage: user.profileImage, iat: user.iat! };
   return next();
 }
