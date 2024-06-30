@@ -1,6 +1,6 @@
 import express from 'express';
 import { IUser } from './auth_model';
-import { loginUser, registerUser, checkEmail, updatePassword, editProfile, getUserById, editProfileImage, changePassword, deleteAccount} from './auth_controller';
+import { loginUser, registerUser, checkEmail, updatePassword, editProfile, getUserById, editProfileImage, changePassword, deleteAccount, updateFcm} from './auth_controller';
 //import auth, { CustomRequest } from './auth';
 import User from './auth_model';
 import authMiddleware from '../middlewares/auth.middleware';
@@ -85,6 +85,8 @@ router.put('/updatePassword',async (req: Request, res: Response) => {
     message: 'Password updated successfully.',
   });
 });
+
+router.put('/update_fcm', authMiddleware, updateFcm);
 
 // Edit profile
 router.put('/editProfile', async (req: Request, res: Response) => {

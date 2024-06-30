@@ -210,6 +210,17 @@ export const getUsers = async (req: Request, res: Response) => {
   }
 };
 
+export const updateFcm = async (req: Request, res: Response) => {
+  const { fcm_token } = req.body;
+  if (!fcm_token) {
+    res.status(400).json({ message: 'FCM token is required' });
+  }
+  const user = await User.findById(req.user?.id);
+  user?.updateOne({ fcm_token }).exec();
+
+  res.send(200);
+}
+
 // Delete account function
 export const deleteAccount = async (req: Request, res: Response) => {
   const userId = req.params.userId;
@@ -254,6 +265,8 @@ export const deleteAccount = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Error deleting account', error });
   }
 }; */
+//update fcm token
+ 
 
 
 
