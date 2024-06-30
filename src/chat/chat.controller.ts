@@ -115,7 +115,7 @@ export function sendMediaMessage({ io, socket, user }: any) {
           token: recipient.fcm_token,
           data: {
             title: `Message from ${user.username}`,
-            body: `http://10.0.2.2:3000/media?media_id=${file_name}`,
+            body: `http://54.254.8.87/media?media_id=${file_name}`,
           },
         };
 
