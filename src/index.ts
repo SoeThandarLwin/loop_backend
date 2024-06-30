@@ -13,16 +13,27 @@ import User from "./auth/auth_model";
 import { z } from "zod";
 import { sendMediaMessage, sendMessage } from './chat/chat.controller';
 import showOwnerRouter from "./showOwnerPosts/showOwnerPosts_router";
+import initializeFirebase from "./firebase";
+import { chatRouter } from "./chat/chat.router";
 const msgSchema = z.object({
   to: z.string().uuid({message: "Must be 5 or more characters long"}),
   content: z.string(),
 })
+
+export type UserClaim = {
+  id: string,
+  username: string,
+  iat: number,
+}
 
 declare global {
   namespace Express {
     interface User {
       id: number;
       username: string;
+    }
+    export interface Request {
+      user?: UserClaim,
     }
   }
 }
@@ -45,6 +56,7 @@ app.use('/show', showAllPost );
 app.use('/post', postRouter);
 app.use('/media', mediaRouter);
 app.use('/owner', showOwnerRouter);
+app.use('/chat', chatRouter);
 app.use(postRouter)
 
 // app.listen(port, () => {
@@ -97,6 +109,8 @@ io.on("connection", async (socket) => {
   socket.on('send:message', sendMessage({ io, socket, user }));
   socket.on('send:media_message', sendMediaMessage({ io, socket, user }));
 });
+
+await initializeFirebase();
 
 httpServer.listen(port, () => {
   console.log(`application is running at: http://localhost:${port}`);

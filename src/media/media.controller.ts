@@ -12,6 +12,8 @@ export async function createMedia(req: Request, res: Response) {
 export async function requestMedia(req: Request, res: Response) {
   const mediaId = req.query.media_id;
 
+  if (mediaId === '') return res.status(404).send();
+
   const media = await Media.findById(mediaId);
 
   if (!media) return res.status(404).send();

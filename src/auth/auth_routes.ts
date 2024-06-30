@@ -1,8 +1,10 @@
 import express from 'express';
 import { IUser } from './auth_model';
 import { loginUser, registerUser, checkEmail, updatePassword, editProfile, getUserById, editProfileImage, changePassword, deleteAccount} from './auth_controller';
-import auth, { CustomRequest } from './auth';
+//import auth, { CustomRequest } from './auth';
 import User from './auth_model';
+import authMiddleware from '../middlewares/auth.middleware';
+import { Request, Response } from 'express';
 
 const router = express.Router();
 
@@ -42,39 +44,47 @@ router.post('/checkEmail', async (req, res) => {
 });
 
 // Fetch logged in user
-router.get('/me', auth, async (req: CustomRequest, res) => {
+router.get('/me', authMiddleware, async (req: Request, res: Response) => {
   return res.status(200).json({
     user: req.user,
   });
 });
-
+const tokenBlacklist = new Set();
 // Logout user
-router.post('/logout', auth, async (req: CustomRequest, res) => {
-  try {
-    if (req.user) {
-      req.user.tokens = req.user.tokens.filter((token) => {
-        return token.token !== req.token;
-      });
-      await req.user.save();
-
-      return res.status(200).json({
-        message: 'User logged out successfully.',
-      });
-    } else {
-      return res.status(400).json({
-        error: 'User not found.',
-      });
-    }
-  } catch (error) {
-    return res.status(500).json({
-      error: 'Server error.',
-    });
+router.post('/logout', authMiddleware, async (req: Request, res: Response) => {
+    
+  // const authHeader = req.headers.authorization;
+  // if (!authHeader) {
+  //   return res.status(401).send();
+  // }
+  // else{
+  //   const token = authHeader.substring(7);
+  //   tokenBlacklist.add(token);
+  //   return res.status(200).json({
+  //     message: 'Logged out successfully.',
+  //     });
+  // }
+  if (!req.headers || !req.headers.authorization) {
+    return res.status(400).send('No authorization header provided');
   }
+
+  const authHeader = req.headers.authorization;
+  if (!authHeader.startsWith('Bearer')) {
+    return res.status(400).send('Invalid authorization header format');
+  }
+
+  const token = authHeader.substring(7);
+  tokenBlacklist.add(token);
+  
+  return res.status(200).json({
+    message: 'Logged out successfully',
+  });
+
 });
 
 
 // Update password
-router.put('/updatePassword', async (req: CustomRequest, res) => {
+router.put('/updatePassword',async (res: Response, req: Request) => {
   const {email, password} = req.body;
   const user = await updatePassword(email, password);
   if (!user) {
@@ -88,7 +98,7 @@ router.put('/updatePassword', async (req: CustomRequest, res) => {
 });
 
 // Edit profile
-router.put('/editProfile', async(req: CustomRequest, res) => {
+router.put('/editProfile', async (res: Response, req: Request) => {
   const {firstName, lastName, username, email } = req.body;
   const user = await editProfile(firstName, lastName, username, email);
   if (!user) {
@@ -129,7 +139,7 @@ router.get('/users', async (req, res) => {
 });
 
 //change Password
-router.put('/changePassword', async (req: CustomRequest, res) => {
+router.put('/changePassword', async (res: Response, req: Request) => {
   const {email, currentPassword, newPassword} = req.body;
   const user = await changePassword(email, currentPassword, newPassword);
   //json parse user
