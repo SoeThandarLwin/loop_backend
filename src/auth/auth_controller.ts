@@ -210,6 +210,7 @@ export const getUsers = async (req: Request, res: Response) => {
   }
 };
 
+//update fcm token when user login
 export const updateFcm = async (req: Request, res: Response) => {
   const { fcm_token } = req.body;
   if (!fcm_token) {

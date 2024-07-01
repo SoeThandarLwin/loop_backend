@@ -74,7 +74,7 @@ app.use(postRouter)
 const io = new Server(httpServer);
 
 io.engine.use((req : IncomingMessage & {user: any, _query:{sid: any}}, res: ServerResponse, next: Function) => {
-  console.log('hello');
+  //console.log('hello');
   const isHandshake = req._query.sid === undefined;
   if (!isHandshake) {
     return next();

@@ -31,7 +31,7 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>({
   profileImage: {type: String , required: false},
   email: { type: String, required: true },
   password: { type: String, required: true },
-  tokens: [{ token: { type: String, required: true } }],
+  // tokens: [{ token: { type: String, required: true } }],
   fcm_token: String,
 });
 
